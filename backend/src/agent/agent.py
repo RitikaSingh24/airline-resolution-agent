@@ -204,8 +204,8 @@ class RealAgent(AgentInterface):
                 final_reply = raw_reply
                 db_actions = action_repo.list_by_conversation(db, conversation_id)
                 actions_taken = [{"action_type": a.action_type, "details": a.details_json} for a in db_actions]
-                db_escalations = escalation_repo.list_by_customer(db, customer_id)
-                is_escalated = any(e.conversation_id == conversation_id for e in db_escalations)
+                db_escalations = escalation_repo.list_by_conversation(db, conversation_id)
+                is_escalated = len(db_escalations) > 0
 
             user_msg = Message(
                 conversation_id=conversation_id,
