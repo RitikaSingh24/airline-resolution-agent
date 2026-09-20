@@ -22,7 +22,9 @@ from core.config import settings
 from models.conversation import Conversation
 from models.message import Message
 import repositories.action_repo as action_repo
+import repositories.booking_repo as booking_repo
 import repositories.conversation_repo as conversation_repo
+import repositories.customer_repo as customer_repo
 import repositories.escalation_repo as escalation_repo
 from services.decision_collector import get_decision_trace, reset_decision_trace
 import services.escalation_service as escalation_service
@@ -156,11 +158,24 @@ class RealAgent(AgentInterface):
 
             # create_react_agent runs the full tool-calling loop (ReAct):
             # LLM → tool call → tool result → LLM → ... → final text reply.
-            agent_executor = create_react_agent(llm, AGENT_TOOLS)
+            agent_executor = create_react_agent(llm, AGENT_TOOLS, state_modifier=SYSTEM_PROMPT)
+
+            customer_obj = customer_repo.get_by_id(db, customer_id)
+            customer_bookings = booking_repo.list_by_customer(db, customer_id)
+            b_lines = [
+                f"PNR: {b.pnr}, Segment: {b.segment_label}, Flight: {b.flight_no or 'N/A'}, Route: {b.route}, Status: {b.status}, Delay: {b.delay_minutes or 0}m"
+                for b in customer_bookings
+            ]
+            b_str = "; ".join(b_lines) if b_lines else "None"
 
             input_messages = [
-                SystemMessage(content=SYSTEM_PROMPT),
-                HumanMessage(content=f"Customer ID: {customer_id}\nMessage: {content}"),
+                HumanMessage(
+                    content=(
+                        f"Authenticated Customer: ID {customer_id}, Name: {customer_obj.name if customer_obj else 'Customer'}, Tier: {customer_obj.tier if customer_obj else 'Standard'}\n"
+                        f"Customer Active Bookings: {b_str}\n"
+                        f"Message: {content}"
+                    )
+                ),
             ]
 
             result = agent_executor.invoke({"messages": input_messages})
@@ -187,8 +202,10 @@ class RealAgent(AgentInterface):
                 is_escalated = fallback_res["escalation"]
             else:
                 final_reply = raw_reply
-                actions_taken = []
-                is_escalated = False
+                db_actions = action_repo.list_by_conversation(db, conversation_id)
+                actions_taken = [{"action_type": a.action_type, "details": a.details_json} for a in db_actions]
+                db_escalations = escalation_repo.list_by_customer(db, customer_id)
+                is_escalated = any(e.conversation_id == conversation_id for e in db_escalations)
 
             user_msg = Message(
                 conversation_id=conversation_id,
