@@ -1,0 +1,24 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+@supports (min-height: 100dvh) {
+  body {
+    min-height: 100dvh;
+  }
+}
+
+@supports not (min-height: 100dvh) {
+  body {
+    min-height: 100vh;
+  }
+}
+
+body {
+  font-family: 'Roboto', sans-serif;
+  background-color: #FFFBFE;
+  color: #1C1B1F;
+}

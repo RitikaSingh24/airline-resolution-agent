@@ -1,0 +1,38 @@
+# Environment files & secrets
+.env
+.env.local
+.env.*.local
+!.env.example
+
+# Databases
+*.db
+*.sqlite
+backend/data/*.db
+
+# Python & Pytest
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.coverage
+htmlcov/
+.venv/
+env/
+venv/
+
+# Node.js & Next.js
+node_modules/
+frontend/node_modules/
+.next/
+frontend/.next/
+out/
+build/
+dist/
+*.log
+npm-debug.log*
+
+# IDE & System
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
