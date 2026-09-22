@@ -62,7 +62,7 @@ The system is seeded with 3 realistic customer profiles and 4 flight booking seg
   * $> 300$ mins (>5h): Meal Voucher + Lounge Access + Hotel covering **delayed hours only** (not a full night).
 * **Cancellation Policy:** Customer's choice of free rebooking on next available flight within 24 hours OR full refund to original payment method within 7 business days.
 * **Loyalty Tiers:** Gold/Platinum tiers receive priority rebooking flags only; tier status **never** authorizes monetary policy exceptions or free business class upgrades.
-* **Fare Difference Waivers:** Voluntary rebooking fare difference above Rs 1,500 requires supervisor approval (`FARE_WAIVER_ABOVE_1500`).
+* **Fare Difference Waivers:** Voluntary rebooking fare difference above Rs 1,500 requires supervisor approval (`FARE_WAIVER_ABOVE_1500`)
 
 ---
 
